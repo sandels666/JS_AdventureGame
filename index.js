@@ -92,7 +92,7 @@ const actions = {
     if (roomItem) {
       playerItems.push(roomItem)
       playerCurrentRoom.items.splice(roomItemIndex, 1)
-      console.log(`\nYou picked up a ${roomItem}\n`)
+      console.log(`\nYou picked up a ${roomItem.name}\n`)  //////////////////////////////////////
     } else {
       console.log('You moron! That item is not in this room!')
     }
@@ -104,7 +104,7 @@ const actions = {
     if (playerItem) {
       playerCurrentRoom.items.push(playerItem)
       playerItems.splice(playerItemIndex, 1)
-      console.log(`\nYou dropped a ${playerItem}\n`)
+      console.log(`\nYou dropped a ${playerItem.name}\n`)  //////////////////////////////////////
     } else {
       console.log('You moron! You do not have that item!')
     }
