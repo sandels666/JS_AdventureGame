@@ -1,4 +1,11 @@
+
 const readline = require("readline")
+
+const utils = require('./utils')
+
+const x = utils.myFunc()
+
+console.log(x)
 
 const TYPE_WEAPON = 0
 const TYPE_SHIELD = 1
@@ -68,6 +75,18 @@ rooms["Attic"] = {
       damage: 35,
       weight: 2000,
       type: TYPE_WEAPON,
+    },
+    {
+      name: 'Steel sword',
+      damage: 35,
+      weight: 2000,
+      type: TYPE_WEAPON,
+    },
+    {
+      name: 'Steel sword',
+      damage: 35,
+      weight: 2000,
+      type: TYPE_WEAPON,
     }
   ],
   monster: {
@@ -98,165 +117,191 @@ let godmode = false
 ////////////////////////////////////
 const actions = {
   move: args => {
-    const targetRoom = args[0]
-    if (playerCurrentRoom.connectedRooms.indexOf(targetRoom) != -1) {
-      playerCurrentRoom = rooms[targetRoom]
-    } else {
-      console.log('I can not get there from here.')
-    }
+    move(args)
   },
 
   pickup: args => {
-    const targetItem = args.join(" ")
-    const roomItemIndex = playerCurrentRoom.items.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
-    const roomItem = playerCurrentRoom.items[roomItemIndex]
-    if (roomItem) {
-      const weapon = playerItems.find(item => item.type === TYPE_WEAPON) 
-      //if player already has a weapon
-      if (weapon){
-        //-> drop previous weapon and pick up new one
-        console.log(`\nYou dropped a ${weapon.name}`)
-        playerCurrentRoom.items.push(weapon)
-        playerItems.splice(weapon, 1)
-        playerItems.push(roomItem)
-        playerCurrentRoom.items.splice(roomItemIndex, 1)
-        console.log(`\nYou picked up a ${roomItem.name}\n`)
-      }
-      else {
-        playerItems.push(roomItem)
-        playerCurrentRoom.items.splice(roomItemIndex, 1)
-        console.log(`\nYou picked up a ${roomItem.name}\n`)
-      }
-      
-    } else {
-      console.log('You moron! That item is not in this room!')
-    }
+    pickup(args)
   },
 
   drop: args => {
-    const targetItem = args.join(" ")
-    const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
-    const playerItem = playerItems[playerItemIndex]
-    if (playerItem) {
-      playerCurrentRoom.items.push(playerItem)
-      playerItems.splice(playerItemIndex, 1)
-      console.log(`\nYou dropped a ${playerItem.name}\n`)
-    } else {
-      console.log('You moron! You do not have that item!')
-    }
+    drop(args)
   },
 
   eat: args => {
-    const targetItem = args.join(" ")
-    const consumable = playerItems.find(targetItem.type === TYPE_CONSUMABLE) //checks if player has a consumable                
-    if (!consumable) { 
-      console.log(`\nYou can't eat a ${targetItem}!\n`)
-      return
-    }
-    //->if player has a consumable:
-    const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())  ////////////////////////////////////
-    const playerItem = playerItems[playerItemIndex]
-    if (playerItem) {
-      playerHealth = playerHealth + playerItem.heals
-      playerItems.splice(playerItemIndex, 1)
-      console.log(`\nYou consume ${playerItem.name}.`)
-      console.log(`It heals you ${playerItem.heals}HP\n`)
-    } else {
-      console.log('You moron! You do not have that item!')
-    }
+    eat(args)
   },
 
   observe: _ => {
-    if (playerCurrentRoom.items){
-      console.log(`Room Items: ${playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
-    }
-    if (playerCurrentRoom.connectedRooms) {
-      console.log(`Connected rooms: ${playerCurrentRoom.connectedRooms.join(", ")}`)
-    }
+    observe()
   },
 
   help: _ => {
-    console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
-    console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
-    console.log("\tYou can move to different rooms by typing 'move' and the room's name. You can attack by typing 'attack'.")
-    console.log("\tYou can view this note again by typing 'help' at any time!")
-    console.log("\n\tEnjoy the game!\n")
+    help()
   },
 
   attack: args => {
-    const weapon = playerItems.find(item => item.type === TYPE_WEAPON)
-    if (!weapon) {
-      console.log('You do not have a weapon!')
-      return
-    }
-
-    const monster = playerCurrentRoom.monster
-    if (!monster) {
-      console.log('There is nothing to attack in this room!')
-      return
-    }
-
-    if (godmode == true) {  //godmode-enabled attack properties
-      const damage = 10000
-
-      monster.health = monster.health - damage
-      console.log(`\nYou attack the monster! You deal ${damage} damage.`)
-    }
-    else {  //regular attacking without godmode
-      const type = args[0]
-      const damage = type === 'slash' ? weapon.damage * 1.5 : weapon.damage
-
-      monster.health = monster.health - damage
-      console.log(`\nYou attack the monster! You deal ${damage} damage.`)
-    }
-
-    if(monster.health > 0){
-      const monsterDamage = playerCurrentRoom.monster.damage
-
-      if (godmode == false){  //regular monster attack
-        playerHealth = playerHealth - monsterDamage
-        console.log(`The monster attacks you back! You take ${monsterDamage} damage.\n`)
-      }
-      else { //godmode monster attack
-        console.log(`The monster attacks you back, but fails to damage you due to your god-like status.\n`)
-      }
-
-    }
-    else {
-      console.log(`You killed the ${playerCurrentRoom.monster.name}! Nice job!\n`)
-      if (playerCurrentRoom.monster.drops){  //monster loot drops
-        playerCurrentRoom.items.push(playerCurrentRoom.monster.drops)
-        console.log(`\x1b[32m%s\x1b[0m`,`The monster dropped ${playerCurrentRoom.monster.drops.name}!\n`)
-      }
-      delete playerCurrentRoom.monster
-    }
-
+    attack(args)
   },
 
   tgm: _ => {
-    if (godmode == false){
-      console.log('\x1b[31m%s\x1b[0m','\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
-      godmode = true
-    }
-    else {
-      console.log('\x1b[31m%s\x1b[0m','\nGod mode disabled. \nYou have lost your superpowers.\n')
-      godmode = false
-    }
-
+    tgm()
   }
 
 }
 
+function move(args){
+  const targetRoom = args[0]
+  if (playerCurrentRoom.connectedRooms.indexOf(targetRoom) != -1) {
+    playerCurrentRoom = rooms[targetRoom]
+  } else {
+    console.log('I can not get there from here.')
+  }
+}
 
-// function dropItem(){
-//     const targetItem = playerItems.find(item => item.type === TYPE_WEAPON)
-//     const playerItem = playerItems[targetItem]
-//     if (playerItem) {
-//       playerCurrentRoom.items.push(playerItem)
-//       playerItems.splice(targetItem, 1)
-//       console.log(`\nYou dropped a ${playerItem.name}\n`)
-//     }
-// }
+function pickup(args){
+  const targetItem = args.join(" ")
+  const roomItemIndex = playerCurrentRoom.items.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
+  const roomItem = playerCurrentRoom.items[roomItemIndex]
+  if (roomItem) {
+    const weapon = playerItems.find(item => item.type === TYPE_WEAPON) 
+    //if player already has a weapon
+    if (weapon){
+      //-> drop previous weapon and pick up new one
+      console.log(`\nYou dropped a ${weapon.name}`)
+      playerCurrentRoom.items.push(weapon)
+      playerItems.splice(weapon, 1)
+      playerItems.push(roomItem)
+      playerCurrentRoom.items.splice(roomItemIndex, 1)
+      console.log(`\nYou picked up a ${roomItem.name}\n`)
+    }
+    else {
+      playerItems.push(roomItem)
+      playerCurrentRoom.items.splice(roomItemIndex, 1)
+      console.log(`\nYou picked up a ${roomItem.name}\n`)
+    }
+    
+  } else {
+    console.log('You moron! That item is not in this room!')
+  }
+}
+
+function eat(args){
+  const targetItemName = args.join(" ")
+  const itemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItemName.toLowerCase())
+  
+  if (itemIndex === -1) {
+    console.log('You do not have that item.')
+    return
+  }
+
+  // Item does exist
+  const item = playerItems[itemIndex]
+  
+  if (item.type !== TYPE_CONSUMABLE) {
+    console.log('That item is not consumable.')
+    return
+  }
+
+  // Item is a consumable
+  const heals = item.heals
+  playerHealth += heals
+  console.log(`You have consumed ${item.name} and have been healed ${heals}HP.`)
+
+  // Destroy item
+  playerItems.splice(itemIndex, 1)
+}
+
+function drop(args){
+  const targetItem = args.join(" ")
+  const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
+  const playerItem = playerItems[playerItemIndex]
+  if (playerItem) {
+    playerCurrentRoom.items.push(playerItem)
+    playerItems.splice(playerItemIndex, 1)
+    console.log(`\nYou dropped a ${playerItem.name}\n`)
+  } else {
+    console.log('You moron! You do not have that item!')
+  }
+}
+
+function observe(){
+  if (playerCurrentRoom.items){
+    console.log(`Room Items: ${playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
+  }
+  if (playerCurrentRoom.connectedRooms) {
+    console.log(`Connected rooms: ${playerCurrentRoom.connectedRooms.join(", ")}`)
+  }
+}
+
+function help(){
+  console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
+  console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
+  console.log("\tYou can move to different rooms by typing 'move' and the room's name. You can attack by typing 'attack'.")
+  console.log("\tYou can view this note again by typing 'help' at any time!")
+  console.log("\n\tEnjoy the game!\n")
+}
+
+function attack(args){
+  const weapon = playerItems.find(item => item.type === TYPE_WEAPON)
+  if (!weapon) {
+    console.log('You do not have a weapon!')
+    return
+  }
+
+  const monster = playerCurrentRoom.monster
+  if (!monster) {
+    console.log('There is nothing to attack in this room!')
+    return
+  }
+
+  if (godmode == true) {  //godmode-enabled attack properties
+    const damage = 10000
+
+    monster.health = monster.health - damage
+    console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+  }
+  else {  //regular attacking without godmode
+    const type = args[0]
+    const damage = type === 'slash' ? weapon.damage * 1.5 : weapon.damage
+
+    monster.health = monster.health - damage
+    console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+  }
+
+  if(monster.health > 0){
+    const monsterDamage = playerCurrentRoom.monster.damage
+
+    if (godmode == false){  //regular monster attack
+      playerHealth = playerHealth - monsterDamage
+      console.log(`The monster attacks you back! You take ${monsterDamage} damage.\n`)
+    }
+    else { //godmode monster attack
+      console.log(`The monster attacks you back, but fails to damage you due to your god-like status.\n`)
+    }
+
+  }
+  else {
+    console.log(`You killed the ${playerCurrentRoom.monster.name}! Nice job!\n`)
+    if (playerCurrentRoom.monster.drops){  //monster loot drops
+      playerCurrentRoom.items.push(playerCurrentRoom.monster.drops)
+      console.log(`\x1b[32m%s\x1b[0m`,`The monster dropped ${playerCurrentRoom.monster.drops.name}!\n`)
+    }
+    delete playerCurrentRoom.monster
+  }
+}
+
+function tgm (){
+  if (godmode == false){
+    console.log('\x1b[31m%s\x1b[0m','\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
+    godmode = true
+  }
+  else {
+    console.log('\x1b[31m%s\x1b[0m','\nGod mode disabled. \nYou have lost your superpowers.\n')
+    godmode = false
+  }
+
+}
 
 
 ////////////////////////////////////
@@ -335,6 +380,13 @@ function mapCommand(command) {
     'dismiss',
   ].indexOf(command) != -1) {
     return 'drop'
+  }
+  if ([
+    'drink',
+    'consume',
+    'gulp',
+  ].indexOf(command) != -1) {
+    return 'eat'
   }
   if ([
     'halp',
