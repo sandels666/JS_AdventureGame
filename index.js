@@ -44,7 +44,7 @@ rooms["Anna"] = {
   items: [
     {
       name: 'Shield',
-      armour: 34,
+      armor: 34,
       weight: 4000,
       type: TYPE_SHIELD,
     }
