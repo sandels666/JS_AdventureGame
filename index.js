@@ -10,13 +10,14 @@ const TYPE_CONSUMABLE = 3
 // Game State
 ////////////////////////////////////
 let rooms = {}
+
 rooms["Bob"] = {
   name: "Bob's Bedroom",
   items: [
     {
       name: 'Bronze Sword',
       damage: 25,
-      weight: 2000,
+      weight: 3000,
       type: TYPE_WEAPON,
     },
     {
@@ -45,6 +46,13 @@ rooms["Anna"] = {
     name: "Angry Bill",
     health: 100,
     damage: 10,
+    drops:
+      {
+        name: 'Health potion',
+        weight: 500,
+        type: TYPE_CONSUMABLE,
+        heals: 50,
+      }
   },
   connectedRooms: [
     "Bob",
@@ -53,20 +61,36 @@ rooms["Anna"] = {
 }
 
 rooms["Attic"] = {
-    name: "Attic",
-    monster: {
-      name: "Grue",
-      health: 10000,
-      damage: 10000,
-    },
-    connectedRooms: [
-      "Anna"
-    ]
-  }
+  name: "Attic",
+  items: [
+    {
+      name: 'Iron sword',
+      damage: 35,
+      weight: 2000,
+      type: TYPE_WEAPON,
+    }
+  ],
+  monster: {
+    name: "Grue",
+    health: 10000,
+    damage: 10000,
+    drops:
+      {
+        name: 'Liquid Anthrax',
+        weight: 500,
+        type: TYPE_CONSUMABLE,
+        heals: -500,
+      }
+  },
+  connectedRooms: [
+    "Anna"
+  ]
+}
 
 let playerCurrentRoom = rooms["Bob"]
 let playerItems = []
 let playerHealth = 100
+let godmode = false
 
 
 ////////////////////////////////////
@@ -81,18 +105,37 @@ const actions = {
       console.log('I can not get there from here.')
     }
   },
+
   pickup: args => {
     const targetItem = args.join(" ")
     const roomItemIndex = playerCurrentRoom.items.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
     const roomItem = playerCurrentRoom.items[roomItemIndex]
     if (roomItem) {
-      playerItems.push(roomItem)
-      playerCurrentRoom.items.splice(roomItemIndex, 1)
-      console.log(`\nYou picked up a ${roomItem.name}\n`)
+      const weapon = playerItems.find(item => item.type === TYPE_WEAPON) 
+      //if player already has a weapon
+      if (weapon){
+        //-> drop previous weapon and pick up new one
+        const playerItem = playerItems[weapon]
+        //console.log(`\nYou dropped a ${playerItem.name}\n`)
+        playerCurrentRoom.items.push(playerItem)
+        playerItems.splice(playerItem, 1)
+        ///////////////////////////////////////
+
+        playerItems.push(roomItem)
+        playerCurrentRoom.items.splice(roomItemIndex, 1)
+        console.log(`\nYou picked up a ${roomItem.name}\n`)
+      }
+      else {
+        playerItems.push(roomItem)
+        playerCurrentRoom.items.splice(roomItemIndex, 1)
+        console.log(`\nYou picked up a ${roomItem.name}\n`)
+      }
+      
     } else {
       console.log('You moron! That item is not in this room!')
     }
   },
+
   drop: args => {
     const targetItem = args.join(" ")
     const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
@@ -105,6 +148,7 @@ const actions = {
       console.log('You moron! You do not have that item!')
     }
   },
+
   eat: args => {
     const targetItem = args.join(" ")
     const consumable = playerItems.find(targetItem.type === TYPE_CONSUMABLE)   /////////////////////////////////////
@@ -123,11 +167,16 @@ const actions = {
       console.log('You moron! You do not have that item!')
     }
   },
+
   observe: _ => {
     if (playerCurrentRoom.items){
       console.log(`Room Items: ${playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
     }
+    if (playerCurrentRoom.connectedRooms) {
+      console.log(`Connected rooms: ${playerCurrentRoom.connectedRooms.join(", ")}`)
+    }
   },
+
   help: _ => {
     console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
     console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
@@ -135,6 +184,7 @@ const actions = {
     console.log("\tYou can view this note again by typing 'help' at any time!")
     console.log("\n\tEnjoy the game!\n")
   },
+
   attack: args => {
     const weapon = playerItems.find(item => item.type === TYPE_WEAPON)
     if (!weapon) {
@@ -148,30 +198,67 @@ const actions = {
       return
     }
 
-    const type = args[0]
-    const damage = type === 'slash' ? weapon.damage * 1.5 : weapon.damage
-    
-    monster.health = monster.health - damage
+    if (godmode == true) {  //godmode-enabled attack properties
+      const damage = 10000
 
-    console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+      monster.health = monster.health - damage
+      console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+    }
+    else {  //regular attacking without godmode
+      const type = args[0]
+      const damage = type === 'slash' ? weapon.damage * 1.5 : weapon.damage
+
+      monster.health = monster.health - damage
+      console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+    }
 
     if(monster.health > 0){
       const monsterDamage = playerCurrentRoom.monster.damage
-      playerHealth = playerHealth - monsterDamage
-  
-      console.log(`The monster attacks you back! You take ${monsterDamage} damage.\n`)
+
+      if (godmode == false){  //regular monster attack
+        playerHealth = playerHealth - monsterDamage
+        console.log(`The monster attacks you back! You take ${monsterDamage} damage.\n`)
+      }
+      else { //godmode monster attack
+        console.log(`The monster attacks you back, but fails to damage you due to your god-like status.\n`)
+      }
+
     }
     else {
       console.log(`You killed the ${playerCurrentRoom.monster.name}! Nice job!\n`)
+      if (playerCurrentRoom.monster.drops){  //monster loot drops
+        playerCurrentRoom.items.push(playerCurrentRoom.monster.drops)
+        console.log(`\x1b[32m%s\x1b[0m`,`The monster dropped ${playerCurrentRoom.monster.drops.name}!\n`)
+      }
       delete playerCurrentRoom.monster
     }
 
   },
+
   tgm: _ => {
-    console.log('\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
+    if (godmode == false){
+      console.log('\x1b[31m%s\x1b[0m','\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
+      godmode = true
+    }
+    else {
+      console.log('\x1b[31m%s\x1b[0m','\nGod mode disabled. \nYou have lost your superpowers.\n')
+      godmode = false
+    }
+
   }
 
 }
+
+
+// function dropItem(){
+//     const targetItem = playerItems.find(item => item.type === TYPE_WEAPON)
+//     const playerItem = playerItems[targetItem]
+//     if (playerItem) {
+//       playerCurrentRoom.items.push(playerItem)
+//       playerItems.splice(targetItem, 1)
+//       console.log(`\nYou dropped a ${playerItem.name}\n`)
+//     }
+// }
 
 
 ////////////////////////////////////
@@ -182,19 +269,15 @@ function printUI() {
     console.log(`Room: ${playerCurrentRoom.name}`)
   }
 
-  if (playerCurrentRoom.connectedRooms) {
-      console.log(`Connected rooms: ${playerCurrentRoom.connectedRooms.join(", ")}`)
-  }
-
   if (playerItems.length > 0) {
     console.log(`Inventory: ${playerItems.map(item => `\n\t${item.name}`)}`)
   }
 
   if (playerCurrentRoom && playerCurrentRoom.monster) {
-    console.log(`\nMonster: ${playerCurrentRoom.monster.name} (${playerCurrentRoom.monster.health}HP)`)
+    console.log(`\x1b[33m%s\x1b[0m`,`\nMonster: ${playerCurrentRoom.monster.name} (${playerCurrentRoom.monster.health}HP)`)
   }
 
-  if (playerHealth > 0){
+  if (playerHealth > 0 || godmode){
     console.log(`Your health: ${playerHealth}HP`)
   }
   else {
@@ -204,12 +287,13 @@ function printUI() {
 }
 
 function playerDeath() {
-  console.log(`\nYour health is ${playerHealth}HP.`)
-  console.log(`\nOh dear, you're dead!`)
-  console.log(`Better luck next time!`)
+  console.log('\x1b[31m%s\x1b[0m',`\nYour health is ${playerHealth}HP.`)
+  console.log('\x1b[31m%s\x1b[0m',`\nOh dear, you're dead!`)
+  console.log('\x1b[31m%s\x1b[0m',`Better luck next time!`)
   //console.log(`\nDo you want to play again? (Y/N)`)
-  console.log(`The game will exit in 10 seconds.`)
-  setTimeout(process.exit, 10000)
+  console.log('\x1b[31m%s\x1b[0m',`The game will exit in 15 seconds.`)
+  setTimeout(process.exit, 15000)
+  
 }
 
 
@@ -269,6 +353,7 @@ const rl = readline.createInterface({
   output: process.stdout,
   prompt: "\n--> ",
 })
+
 console.log("\nYou wake up. You're laying on the floor of a kid's bedroom.")
 console.log("You have no memory of any previous events.")
 console.log("\nYou find a note on the ground with some instructions written on it. The note says:")
