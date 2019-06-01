@@ -64,7 +64,7 @@ rooms["Attic"] = {
   name: "Attic",
   items: [
     {
-      name: 'Iron sword',
+      name: 'Steel sword',
       damage: 35,
       weight: 2000,
       type: TYPE_WEAPON,
@@ -115,12 +115,9 @@ const actions = {
       //if player already has a weapon
       if (weapon){
         //-> drop previous weapon and pick up new one
-        const playerItem = playerItems[weapon]
-        //console.log(`\nYou dropped a ${playerItem.name}\n`)
-        playerCurrentRoom.items.push(playerItem)
-        playerItems.splice(playerItem, 1)
-        ///////////////////////////////////////
-
+        console.log(`\nYou dropped a ${weapon.name}`)
+        playerCurrentRoom.items.push(weapon)
+        playerItems.splice(weapon, 1)
         playerItems.push(roomItem)
         playerCurrentRoom.items.splice(roomItemIndex, 1)
         console.log(`\nYou picked up a ${roomItem.name}\n`)
@@ -151,12 +148,13 @@ const actions = {
 
   eat: args => {
     const targetItem = args.join(" ")
-    const consumable = playerItems.find(targetItem.type === TYPE_CONSUMABLE)   /////////////////////////////////////
-    if (!consumable) {
+    const consumable = playerItems.find(targetItem.type === TYPE_CONSUMABLE) //checks if player has a consumable                
+    if (!consumable) { 
       console.log(`\nYou can't eat a ${targetItem}!\n`)
       return
     }
-    const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
+    //->if player has a consumable:
+    const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())  ////////////////////////////////////
     const playerItem = playerItems[playerItemIndex]
     if (playerItem) {
       playerHealth = playerHealth + playerItem.heals
