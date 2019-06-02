@@ -20,6 +20,7 @@ const utils = require('./utils')
 //   -More monsters
 //   -More items
 //   -More story/choices
+//   -Rules of the game explained to player (more in-depth 'help' function)
 //
 //////////////////////////////////////////////
 
