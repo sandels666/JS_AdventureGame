@@ -1,11 +1,23 @@
 
 const readline = require("readline")
-
 const utils = require('./utils')
 
-const x = utils.myFunc()
+// const x = utils.myFunc()
+// console.log(x)
 
-console.log(x)
+
+////////////////////////////////////
+// Game Intro and Item Types
+////////////////////////////////////
+console.log("\nYou wake up. You're laying on the floor of a kid's bedroom.")
+console.log("You have no memory of any previous events.")
+console.log("\nYou find a note on the ground with some instructions written on it. The note says:")
+console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
+console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
+console.log("\tYou can move to different rooms by typing 'move' and the room's name. You can attack by typing 'attack'.")
+console.log("\tYou can use consumable items by typing 'eat' or 'drink' and the item's name.")
+console.log("\tYou can view this note again by typing 'help' at any time!")
+console.log("\n\tEnjoy the game!\n")
 
 const TYPE_WEAPON = 0
 const TYPE_SHIELD = 1
@@ -17,6 +29,7 @@ const TYPE_CONSUMABLE = 3
 // Game State
 ////////////////////////////////////
 let rooms = {}
+
 
 rooms["Bob"] = {
   name: "Bob's Bedroom",
@@ -38,6 +51,7 @@ rooms["Bob"] = {
     "Anna"
   ]
 }
+
 
 rooms["Anna"] = {
   name: "Anna's Bedroom",
@@ -67,21 +81,10 @@ rooms["Anna"] = {
   ]
 }
 
+
 rooms["Attic"] = {
   name: "Attic",
   items: [
-    {
-      name: 'Steel sword',
-      damage: 35,
-      weight: 2000,
-      type: TYPE_WEAPON,
-    },
-    {
-      name: 'Steel sword',
-      damage: 35,
-      weight: 2000,
-      type: TYPE_WEAPON,
-    },
     {
       name: 'Steel sword',
       damage: 35,
@@ -105,6 +108,7 @@ rooms["Attic"] = {
     "Anna"
   ]
 }
+
 
 let playerCurrentRoom = rooms["Bob"]
 let playerItems = []
@@ -146,9 +150,14 @@ const actions = {
 
   tgm: _ => {
     tgm()
-  }
+  },
+
+  examine: args => {
+    examine(args)
+  },
 
 }
+
 
 function move(args){
   const targetRoom = args[0]
@@ -159,20 +168,27 @@ function move(args){
   }
 }
 
+
 function pickup(args){
   const targetItem = args.join(" ")
   const roomItemIndex = playerCurrentRoom.items.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
   const roomItem = playerCurrentRoom.items[roomItemIndex]
+
   if (roomItem) {
-    const weapon = playerItems.find(item => item.type === TYPE_WEAPON) 
-    //if player already has a weapon
-    if (weapon){
+
+    const playerWeaponIndex = playerItems.findIndex(item => item.type === TYPE_WEAPON)
+    const playerWeapon = playerItems[playerWeaponIndex]
+    const roomItemIsWeapon = roomItem.type === TYPE_WEAPON
+
+    //if player already has a weapon and the room item is a weapon
+    if (playerWeaponIndex !== -1 && roomItemIsWeapon){
       //-> drop previous weapon and pick up new one
-      console.log(`\nYou dropped a ${weapon.name}`)
-      playerCurrentRoom.items.push(weapon)
-      playerItems.splice(weapon, 1)
+      console.log(`\nYou dropped a ${playerWeapon.name}`)
+      playerCurrentRoom.items.push(playerWeapon)
+      playerItems.splice(playerWeaponIndex, 1) 
       playerItems.push(roomItem)
       playerCurrentRoom.items.splice(roomItemIndex, 1)
+
       console.log(`\nYou picked up a ${roomItem.name}\n`)
     }
     else {
@@ -185,6 +201,7 @@ function pickup(args){
     console.log('You moron! That item is not in this room!')
   }
 }
+
 
 function eat(args){
   const targetItemName = args.join(" ")
@@ -206,11 +223,12 @@ function eat(args){
   // Item is a consumable
   const heals = item.heals
   playerHealth += heals
-  console.log(`You have consumed ${item.name} and have been healed ${heals}HP.`)
+  console.log(`\nYou have consumed ${item.name} and have been healed ${heals}HP.\n`)
 
   // Destroy item
   playerItems.splice(itemIndex, 1)
 }
+
 
 function drop(args){
   const targetItem = args.join(" ")
@@ -225,6 +243,7 @@ function drop(args){
   }
 }
 
+
 function observe(){
   if (playerCurrentRoom.items){
     console.log(`Room Items: ${playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
@@ -234,6 +253,7 @@ function observe(){
   }
 }
 
+
 function help(){
   console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
   console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
@@ -241,6 +261,7 @@ function help(){
   console.log("\tYou can view this note again by typing 'help' at any time!")
   console.log("\n\tEnjoy the game!\n")
 }
+
 
 function attack(args){
   const weapon = playerItems.find(item => item.type === TYPE_WEAPON)
@@ -291,6 +312,7 @@ function attack(args){
   }
 }
 
+
 function tgm (){
   if (godmode == false){
     console.log('\x1b[31m%s\x1b[0m','\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
@@ -300,6 +322,51 @@ function tgm (){
     console.log('\x1b[31m%s\x1b[0m','\nGod mode disabled. \nYou have lost your superpowers.\n')
     godmode = false
   }
+
+}
+
+
+function examine (args) {
+  const targetName = args.join(" ")
+  console.log('')
+
+  //searches player items to see if player has an item by that name
+  const itemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetName.toLowerCase())
+  if (itemIndex === -1) {
+
+    //searches current room's monsters to see if there's a monster by that name
+    const monster = playerCurrentRoom.monster.name.toLowerCase() === targetName.toLowerCase()
+    if (!monster){
+
+      console.log(`There's no item or monster by that name.`)
+      return
+
+    }
+    else { //monster exists by that name
+      for (var property in playerCurrentRoom.monster){
+        if (playerCurrentRoom.monster.hasOwnProperty(property)){
+          if (property != "drops"){
+            console.log(property + ': ' + playerCurrentRoom.monster[property])
+          }
+        }
+      }
+    }
+
+  }
+  else { //item in player's inventory exists by that name
+    const item = playerItems[itemIndex]
+    //console.log(`\nName: ${item.name}\nWeight: ${item.weight}g\nHeals: ${item.heals}HP\n`)   //TODO
+
+    for (var property in item){
+      if (item.hasOwnProperty(property)){
+        if (property != "type"){
+          console.log(property + ': ' + item[property])
+        }
+      }
+    }
+  }
+
+  console.log('')
 
 }
 
@@ -329,6 +396,7 @@ function printUI() {
 
 }
 
+
 function playerDeath() {
   console.log('\x1b[31m%s\x1b[0m',`\nYour health is ${playerHealth}HP.`)
   console.log('\x1b[31m%s\x1b[0m',`\nOh dear, you're dead!`)
@@ -338,7 +406,6 @@ function playerDeath() {
   setTimeout(process.exit, 15000)
   
 }
-
 
 
 ////////////////////////////////////
@@ -395,8 +462,10 @@ function mapCommand(command) {
   ].indexOf(command) != -1) {
     return 'help'
   }
+  
   return command
 }
+
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -404,14 +473,7 @@ const rl = readline.createInterface({
   prompt: "\n--> ",
 })
 
-console.log("\nYou wake up. You're laying on the floor of a kid's bedroom.")
-console.log("You have no memory of any previous events.")
-console.log("\nYou find a note on the ground with some instructions written on it. The note says:")
-console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
-console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
-console.log("\tYou can move to different rooms by typing 'move' and the room's name. You can attack by typing 'attack'.")
-console.log("\tYou can view this note again by typing 'help' at any time!")
-console.log("\n\tEnjoy the game!\n")
+
 rl.prompt()
 rl.on('line', (line) => {
   line = line.trim()
@@ -423,10 +485,12 @@ rl.on('line', (line) => {
   if (action) {
     action(args)
   }
-  
+
   printUI()
 
   rl.prompt()
 }).on('close', () => {
   process.exit(0)
 })
+
+//console.clear()
