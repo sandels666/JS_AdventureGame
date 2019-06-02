@@ -1,7 +1,8 @@
 
 
 module.exports = {
-  myFunc: () => {
-    return 'hello'
-  }
+  // myFunc: () => {
+  //   return 'hello'
+  // }
+  
 }

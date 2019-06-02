@@ -6,6 +6,24 @@ const utils = require('./utils')
 // console.log(x)
 
 
+/////////////////TODO:////////////////////////
+//
+// -Technical:
+//   -Save states
+//   -Modulizing functions to another file
+//   -Clear screen after each input (properly)
+// -Gameplay:
+//   -Armor/shield system (reduces incoming damage)
+//   -Armor/shield swapping
+// -Content:
+//   -More rooms
+//   -More monsters
+//   -More items
+//   -More story/choices
+//
+//////////////////////////////////////////////
+
+
 ////////////////////////////////////
 // Game Intro and Item Types
 ////////////////////////////////////
@@ -69,10 +87,10 @@ rooms["Anna"] = {
     damage: 10,
     drops:
       {
-        name: 'Health potion',
-        weight: 500,
-        type: TYPE_CONSUMABLE,
-        heals: 50,
+        name: 'Steel sword',
+        damage: 35,
+        weight: 2000,
+        type: TYPE_WEAPON,
       }
   },
   connectedRooms: [
@@ -86,10 +104,10 @@ rooms["Attic"] = {
   name: "Attic",
   items: [
     {
-      name: 'Steel sword',
-      damage: 35,
-      weight: 2000,
-      type: TYPE_WEAPON,
+      name: 'Health potion',
+      weight: 500,
+      type: TYPE_CONSUMABLE,
+      heals: 50,
     }
   ],
   monster: {
