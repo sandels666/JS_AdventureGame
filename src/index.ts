@@ -5,6 +5,7 @@ import * as readline from 'readline'
 // console.log(x)
 
 
+
 /////////////////TODO:////////////////////////
 //
 // -Technical:
@@ -24,9 +25,12 @@ import * as readline from 'readline'
 //////////////////////////////////////////////
 
 
+
+
 ////////////////////////////////////
 // Game Intro and Item Types
 ////////////////////////////////////
+
 console.log("\nYou wake up. You're laying on the floor of a kid's bedroom.")
 console.log("You have no memory of any previous events.")
 console.log("\nYou find a note on the ground with some instructions written on it. The note says:")
@@ -43,11 +47,12 @@ const TYPE_ARMOR = 2
 const TYPE_CONSUMABLE = 3
 
 
+
 ////////////////////////////////////
 // Game State
 ////////////////////////////////////
-let rooms = {}
 
+let rooms = {}
 
 rooms["Bob"] = {
   name: "Bob's Bedroom",
@@ -67,7 +72,10 @@ rooms["Bob"] = {
   ],
   connectedRooms: [
     "Anna"
-  ]
+  ],
+  description: 
+`As you look around the room, you notice that it quite resembles the bedroom 
+you had when you were a child. I wonder if that's a coincidence..?`,
 }
 
 
@@ -96,7 +104,9 @@ rooms["Anna"] = {
   connectedRooms: [
     "Bob",
     "Attic"
-  ]
+  ],
+  description: 
+`Why are you looking around a little girl's bedroom? Are you a pedophile? o.O`,
 }
 
 
@@ -124,9 +134,11 @@ rooms["Attic"] = {
   },
   connectedRooms: [
     "Anna"
-  ]
+  ],
+  description: 
+`It's creepy as fuck in here. You can vaguely spot a grue lurking in the shadows.
+You probably shouldn't try attacking it...`,
 }
-
 
 let playerCurrentRoom = rooms["Bob"]
 let playerItems: any[] = []
@@ -134,9 +146,11 @@ let playerHealth = 100
 let godmode = false
 
 
+
 ////////////////////////////////////
 // Game Functionality
 ////////////////////////////////////
+
 const actions = {
   move: args => {
     move(args)
@@ -269,6 +283,9 @@ function observe(){
   if (playerCurrentRoom.connectedRooms) {
     console.log(`Connected rooms: ${playerCurrentRoom.connectedRooms.join(", ")}`)
   }
+  if (playerCurrentRoom.description){
+    console.log(`\n\x1b[34m%s\x1b[0m`, playerCurrentRoom.description , `\n`)
+  }
 }
 
 
@@ -389,9 +406,11 @@ function examine (args) {
 }
 
 
+
 ////////////////////////////////////
 // Game UI
 ////////////////////////////////////
+
 function printUI() {
   if (playerCurrentRoom) {
     console.log(`Room: ${playerCurrentRoom.name}`)
@@ -417,8 +436,9 @@ function printUI() {
 
 function playerDeath() {
   console.log('\x1b[31m%s\x1b[0m',`\nYour health is ${playerHealth}HP.`)
-  console.log('\x1b[31m%s\x1b[0m',`\nOh dear, you're dead!`)
-  console.log('\x1b[31m%s\x1b[0m',`Better luck next time!`)
+  console.log('\x1b[31m%s\x1b[0m',`\nOh dear, you're dead, you dumb cunt!`)
+  console.log('\x1b[31m%s\x1b[0m',`\nSeriously, how thick are you? :D`)
+  console.log('\x1b[31m%s\x1b[0m',`\nAnyways, better luck next time!`)
   //console.log(`\nDo you want to play again? (Y/N)`)
   console.log('\x1b[31m%s\x1b[0m',`The game will exit in 15 seconds.`)
   setTimeout(process.exit, 15000)
@@ -426,9 +446,11 @@ function playerDeath() {
 }
 
 
+
 ////////////////////////////////////
 // Game Input
 ////////////////////////////////////
+
 function mapCommand(command) {
   if ([
     'take',
@@ -438,12 +460,14 @@ function mapCommand(command) {
   ].indexOf(command) != -1) {
     return 'pickup'
   }
+
   if ([
     'look',
     'search',
   ].indexOf(command) != -1) {
     return 'observe'
   }
+
   if ([
     'go',
     'goto',
@@ -451,6 +475,7 @@ function mapCommand(command) {
   ].indexOf(command) != -1) {
     return 'move'
   }
+
   if ([
     'enablecheats',
     'cheats',
@@ -459,6 +484,7 @@ function mapCommand(command) {
   ].indexOf(command) != -1) {
     return 'tgm'
   }
+
   if ([
     'discard',
     'abandon',
@@ -466,6 +492,7 @@ function mapCommand(command) {
   ].indexOf(command) != -1) {
     return 'drop'
   }
+
   if ([
     'drink',
     'consume',
@@ -473,6 +500,7 @@ function mapCommand(command) {
   ].indexOf(command) != -1) {
     return 'eat'
   }
+
   if ([
     'halp',
     'helpme',
