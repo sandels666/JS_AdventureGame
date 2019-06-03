@@ -1,5 +1,6 @@
 
 import * as readline from 'readline'
+import GameState from './GameState'
 
 // const x = utils.myFunc()
 // console.log(x)
@@ -37,101 +38,16 @@ console.log("\tYou can use consumable items by typing 'eat' or 'drink' and the i
 console.log("\tYou can view this note again by typing 'help' at any time!")
 console.log("\n\tEnjoy the game!\n")
 
-const TYPE_WEAPON = 0
-const TYPE_SHIELD = 1
-const TYPE_ARMOR = 2
-const TYPE_CONSUMABLE = 3
+export const TYPE_WEAPON = 0
+export const TYPE_SHIELD = 1
+export const TYPE_ARMOR = 2
+export const TYPE_CONSUMABLE = 3
 
 
 ////////////////////////////////////
 // Game State
 ////////////////////////////////////
-let rooms = {}
-
-
-rooms["Bob"] = {
-  name: "Bob's Bedroom",
-  items: [
-    {
-      name: 'Bronze Sword',
-      damage: 25,
-      weight: 3000,
-      type: TYPE_WEAPON,
-    },
-    {
-      name: 'Water Bottle',
-      weight: 300,
-      type: TYPE_CONSUMABLE,
-      heals: 10,
-    }
-  ],
-  connectedRooms: [
-    "Anna"
-  ]
-}
-
-
-rooms["Anna"] = {
-  name: "Anna's Bedroom",
-  items: [
-    {
-      name: 'Shield',
-      armor: 34,
-      weight: 4000,
-      type: TYPE_SHIELD,
-    }
-  ],
-  monster: {
-    name: "Angry Bill",
-    health: 100,
-    damage: 10,
-    drops:
-      {
-        name: 'Steel sword',
-        damage: 35,
-        weight: 2000,
-        type: TYPE_WEAPON,
-      }
-  },
-  connectedRooms: [
-    "Bob",
-    "Attic"
-  ]
-}
-
-
-rooms["Attic"] = {
-  name: "Attic",
-  items: [
-    {
-      name: 'Health potion',
-      weight: 500,
-      type: TYPE_CONSUMABLE,
-      heals: 50,
-    }
-  ],
-  monster: {
-    name: "Grue",
-    health: 10000,
-    damage: 10000,
-    drops:
-      {
-        name: 'Liquid Anthrax',
-        weight: 500,
-        type: TYPE_CONSUMABLE,
-        heals: -500,
-      }
-  },
-  connectedRooms: [
-    "Anna"
-  ]
-}
-
-
-let playerCurrentRoom = rooms["Bob"]
-let playerItems: any[] = []
-let playerHealth = 100
-let godmode = false
+const gameState = new GameState()
 
 
 ////////////////////////////////////
@@ -179,8 +95,8 @@ const actions = {
 
 function move(args){
   const targetRoom = args[0]
-  if (playerCurrentRoom.connectedRooms.indexOf(targetRoom) != -1) {
-    playerCurrentRoom = rooms[targetRoom]
+  if (gameState.playerCurrentRoom.connectedRooms.indexOf(targetRoom) != -1) {
+    gameState.playerCurrentRoom = gameState.rooms[targetRoom]
   } else {
     console.log('I can not get there from here.')
   }
@@ -189,29 +105,29 @@ function move(args){
 
 function pickup(args){
   const targetItem = args.join(" ")
-  const roomItemIndex = playerCurrentRoom.items.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
-  const roomItem = playerCurrentRoom.items[roomItemIndex]
+  const roomItemIndex = gameState.playerCurrentRoom.items.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
+  const roomItem = gameState.playerCurrentRoom.items[roomItemIndex]
 
   if (roomItem) {
 
-    const playerWeaponIndex = playerItems.findIndex(item => item.type === TYPE_WEAPON)
-    const playerWeapon = playerItems[playerWeaponIndex]
+    const playerWeaponIndex = gameState.playerItems.findIndex(item => item.type === TYPE_WEAPON)
+    const playerWeapon = gameState.playerItems[playerWeaponIndex]
     const roomItemIsWeapon = roomItem.type === TYPE_WEAPON
 
     //if player already has a weapon and the room item is a weapon
     if (playerWeaponIndex !== -1 && roomItemIsWeapon){
       //-> drop previous weapon and pick up new one
       console.log(`\nYou dropped a ${playerWeapon.name}`)
-      playerCurrentRoom.items.push(playerWeapon)
-      playerItems.splice(playerWeaponIndex, 1) 
-      playerItems.push(roomItem)
-      playerCurrentRoom.items.splice(roomItemIndex, 1)
+      gameState.playerCurrentRoom.items.push(playerWeapon)
+      gameState.playerItems.splice(playerWeaponIndex, 1) 
+      gameState.playerItems.push(roomItem)
+      gameState.playerCurrentRoom.items.splice(roomItemIndex, 1)
 
       console.log(`\nYou picked up a ${roomItem.name}\n`)
     }
     else {
-      playerItems.push(roomItem)
-      playerCurrentRoom.items.splice(roomItemIndex, 1)
+      gameState.playerItems.push(roomItem)
+      gameState.playerCurrentRoom.items.splice(roomItemIndex, 1)
       console.log(`\nYou picked up a ${roomItem.name}\n`)
     }
     
@@ -223,7 +139,7 @@ function pickup(args){
 
 function eat(args){
   const targetItemName = args.join(" ")
-  const itemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItemName.toLowerCase())
+  const itemIndex = gameState.playerItems.findIndex(item => item.name.toLowerCase() === targetItemName.toLowerCase())
   
   if (itemIndex === -1) {
     console.log('You do not have that item.')
@@ -231,7 +147,7 @@ function eat(args){
   }
 
   // Item does exist
-  const item = playerItems[itemIndex]
+  const item = gameState.playerItems[itemIndex]
   
   if (item.type !== TYPE_CONSUMABLE) {
     console.log('That item is not consumable.')
@@ -240,21 +156,21 @@ function eat(args){
 
   // Item is a consumable
   const heals = item.heals
-  playerHealth += heals
+  gameState.playerHealth += heals
   console.log(`\nYou have consumed ${item.name} and have been healed ${heals}HP.\n`)
 
   // Destroy item
-  playerItems.splice(itemIndex, 1)
+  gameState.playerItems.splice(itemIndex, 1)
 }
 
 
 function drop(args){
   const targetItem = args.join(" ")
-  const playerItemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
-  const playerItem = playerItems[playerItemIndex]
+  const playerItemIndex = gameState.playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
+  const playerItem = gameState.playerItems[playerItemIndex]
   if (playerItem) {
-    playerCurrentRoom.items.push(playerItem)
-    playerItems.splice(playerItemIndex, 1)
+    gameState.playerCurrentRoom.items.push(playerItem)
+    gameState.playerItems.splice(playerItemIndex, 1)
     console.log(`\nYou dropped a ${playerItem.name}\n`)
   } else {
     console.log('You moron! You do not have that item!')
@@ -263,11 +179,11 @@ function drop(args){
 
 
 function observe(){
-  if (playerCurrentRoom.items){
-    console.log(`Room Items: ${playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
+  if (gameState.playerCurrentRoom.items){
+    console.log(`Room Items: ${gameState.playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
   }
-  if (playerCurrentRoom.connectedRooms) {
-    console.log(`Connected rooms: ${playerCurrentRoom.connectedRooms.join(", ")}`)
+  if (gameState.playerCurrentRoom.connectedRooms) {
+    console.log(`Connected rooms: ${gameState.playerCurrentRoom.connectedRooms.join(", ")}`)
   }
 }
 
@@ -282,19 +198,19 @@ function help(){
 
 
 function attack(args){
-  const weapon = playerItems.find(item => item.type === TYPE_WEAPON)
+  const weapon = gameState.playerItems.find(item => item.type === TYPE_WEAPON)
   if (!weapon) {
     console.log('You do not have a weapon!')
     return
   }
 
-  const monster = playerCurrentRoom.monster
+  const monster = gameState.playerCurrentRoom.monster
   if (!monster) {
     console.log('There is nothing to attack in this room!')
     return
   }
 
-  if (godmode == true) {  //godmode-enabled attack properties
+  if (gameState.godmode == true) {  //godmode-enabled attack properties
     const damage = 10000
 
     monster.health = monster.health - damage
@@ -309,10 +225,10 @@ function attack(args){
   }
 
   if(monster.health > 0){
-    const monsterDamage = playerCurrentRoom.monster.damage
+    const monsterDamage = gameState.playerCurrentRoom.monster.damage
 
-    if (godmode == false){  //regular monster attack
-      playerHealth = playerHealth - monsterDamage
+    if (gameState.godmode == false){  //regular monster attack
+      gameState.playerHealth = gameState.playerHealth - monsterDamage
       console.log(`The monster attacks you back! You take ${monsterDamage} damage.\n`)
     }
     else { //godmode monster attack
@@ -321,24 +237,24 @@ function attack(args){
 
   }
   else {
-    console.log(`You killed the ${playerCurrentRoom.monster.name}! Nice job!\n`)
-    if (playerCurrentRoom.monster.drops){  //monster loot drops
-      playerCurrentRoom.items.push(playerCurrentRoom.monster.drops)
-      console.log(`\x1b[32m%s\x1b[0m`,`The monster dropped ${playerCurrentRoom.monster.drops.name}!\n`)
+    console.log(`You killed the ${gameState.playerCurrentRoom.monster.name}! Nice job!\n`)
+    if (gameState.playerCurrentRoom.monster.drops){  //monster loot drops
+      gameState.playerCurrentRoom.items.push(gameState.playerCurrentRoom.monster.drops)
+      console.log(`\x1b[32m%s\x1b[0m`,`The monster dropped ${gameState.playerCurrentRoom.monster.drops.name}!\n`)
     }
-    delete playerCurrentRoom.monster
+    delete gameState.playerCurrentRoom.monster
   }
 }
 
 
 function tgm (){
-  if (godmode == false){
+  if (gameState.godmode == false){
     console.log('\x1b[31m%s\x1b[0m','\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
-    godmode = true
+    gameState.godmode = true
   }
   else {
     console.log('\x1b[31m%s\x1b[0m','\nGod mode disabled. \nYou have lost your superpowers.\n')
-    godmode = false
+    gameState.godmode = false
   }
 
 }
@@ -349,11 +265,11 @@ function examine (args) {
   console.log('')
 
   //searches player items to see if player has an item by that name
-  const itemIndex = playerItems.findIndex(item => item.name.toLowerCase() === targetName.toLowerCase())
+  const itemIndex = gameState.playerItems.findIndex(item => item.name.toLowerCase() === targetName.toLowerCase())
   if (itemIndex === -1) {
 
     //searches current room's monsters to see if there's a monster by that name
-    const monster = playerCurrentRoom.monster.name.toLowerCase() === targetName.toLowerCase()
+    const monster = gameState.playerCurrentRoom.monster.name.toLowerCase() === targetName.toLowerCase()
     if (!monster){
 
       console.log(`There's no item or monster by that name.`)
@@ -361,10 +277,10 @@ function examine (args) {
 
     }
     else { //monster exists by that name
-      for (var property in playerCurrentRoom.monster){
-        if (playerCurrentRoom.monster.hasOwnProperty(property)){
+      for (var property in gameState.playerCurrentRoom.monster){
+        if (gameState.playerCurrentRoom.monster.hasOwnProperty(property)){
           if (property != "drops"){
-            console.log(property + ': ' + playerCurrentRoom.monster[property])
+            console.log(property + ': ' + gameState.playerCurrentRoom.monster[property])
           }
         }
       }
@@ -372,7 +288,7 @@ function examine (args) {
 
   }
   else { //item in player's inventory exists by that name
-    const item = playerItems[itemIndex]
+    const item = gameState.playerItems[itemIndex]
     //console.log(`\nName: ${item.name}\nWeight: ${item.weight}g\nHeals: ${item.heals}HP\n`)   //TODO
 
     for (var property in item){
@@ -393,20 +309,20 @@ function examine (args) {
 // Game UI
 ////////////////////////////////////
 function printUI() {
-  if (playerCurrentRoom) {
-    console.log(`Room: ${playerCurrentRoom.name}`)
+  if (gameState.playerCurrentRoom) {
+    console.log(`Room: ${gameState.playerCurrentRoom.name}`)
   }
 
-  if (playerItems.length > 0) {
-    console.log(`Inventory: ${playerItems.map(item => `\n\t${item.name}`)}`)
+  if (gameState.playerItems.length > 0) {
+    console.log(`Inventory: ${gameState.playerItems.map(item => `\n\t${item.name}`)}`)
   }
 
-  if (playerCurrentRoom && playerCurrentRoom.monster) {
-    console.log(`\x1b[33m%s\x1b[0m`,`\nMonster: ${playerCurrentRoom.monster.name} (${playerCurrentRoom.monster.health}HP)`)
+  if (gameState.playerCurrentRoom && gameState.playerCurrentRoom.monster) {
+    console.log(`\x1b[33m%s\x1b[0m`,`\nMonster: ${gameState.playerCurrentRoom.monster.name} (${gameState.playerCurrentRoom.monster.health}HP)`)
   }
 
-  if (playerHealth > 0 || godmode){
-    console.log(`Your health: ${playerHealth}HP`)
+  if (gameState.playerHealth > 0 || gameState.godmode){
+    console.log(`Your health: ${gameState.playerHealth}HP`)
   }
   else {
     playerDeath()
@@ -416,7 +332,7 @@ function printUI() {
 
 
 function playerDeath() {
-  console.log('\x1b[31m%s\x1b[0m',`\nYour health is ${playerHealth}HP.`)
+  console.log('\x1b[31m%s\x1b[0m',`\nYour health is ${gameState.playerHealth}HP.`)
   console.log('\x1b[31m%s\x1b[0m',`\nOh dear, you're dead!`)
   console.log('\x1b[31m%s\x1b[0m',`Better luck next time!`)
   //console.log(`\nDo you want to play again? (Y/N)`)
