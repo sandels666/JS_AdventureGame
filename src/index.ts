@@ -1,6 +1,5 @@
 
-const readline = require("readline")
-const utils = require('./utils')
+import * as readline from 'readline'
 
 // const x = utils.myFunc()
 // console.log(x)
@@ -130,7 +129,7 @@ rooms["Attic"] = {
 
 
 let playerCurrentRoom = rooms["Bob"]
-let playerItems = []
+let playerItems: any[] = []
 let playerHealth = 100
 let godmode = false
 
