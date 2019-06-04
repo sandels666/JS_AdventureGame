@@ -11,7 +11,6 @@ import GameState from './GameState'
 //
 // -Technical:
 //   -Save states
-//   -Modulizing functions to another file
 //   -Clear screen after each input (properly)
 // -Gameplay:
 //   -Armor/shield system (reduces incoming damage)
@@ -298,7 +297,7 @@ function examine (args) {
   }
   else { //item in player's inventory exists by that name
     const item = gameState.playerItems[itemIndex]
-    //console.log(`\nName: ${item.name}\nWeight: ${item.weight}g\nHeals: ${item.heals}HP\n`)   //TODO
+    //console.log(`\nName: ${item.name}\nWeight: ${item.weight}g\nHeals: ${item.heals}HP\n`)
 
     for (var property in item){
       if (item.hasOwnProperty(property)){

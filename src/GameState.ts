@@ -38,7 +38,7 @@ export default class GameState {
       ],
       description: 
     `As you look around the room, you notice that it quite resembles the bedroom 
-    you had when you were a child. I wonder if that's a coincidence..?`,
+you had when you were a child. I wonder if that's a coincidence..?`,
     }
     this.rooms["Anna"] = {
       name: "Anna's Bedroom",
@@ -96,7 +96,7 @@ export default class GameState {
       ],
       description: 
     `It's creepy as fuck in here. You can vaguely spot a grue lurking in the shadows.
-    You probably shouldn't try attacking it...`,
+You probably shouldn't try attacking it...`,
     }
   }
 }
