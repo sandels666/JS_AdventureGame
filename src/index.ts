@@ -59,6 +59,10 @@ const gameState = new GameState()
 ////////////////////////////////////
 
 const actions = {
+  save: args => {
+    save(args)
+  },
+
   move: args => {
     move(args)
   },
@@ -95,6 +99,13 @@ const actions = {
     examine(args)
   },
 
+}
+
+
+function save(args) {
+  if (gameState.save()) {
+    console.log('Game saved!')
+  }
 }
 
 
