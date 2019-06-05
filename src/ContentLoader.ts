@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "fs"
+import { existsSync, readFileSync } from 'fs'
 
 const CONTENT_ROOT = 'content/'
 
