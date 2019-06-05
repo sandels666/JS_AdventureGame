@@ -45,8 +45,8 @@ function save(args) {
 
 function move(args) {
   const targetRoom = args[0]
-  if (gameState.playerCurrentRoom.connectedRooms.indexOf(targetRoom) != -1) {
-    gameState.playerCurrentRoom = gameState.rooms[targetRoom]
+  if (gameState.getPlayerCurrentRoom().connectedRooms.indexOf(targetRoom) != -1) {
+    gameState.setPlayerCurrentRoom(targetRoom)
   } else {
     console.log('I can not get there from here.')
   }
@@ -119,7 +119,7 @@ function drop(args) {
   )
   const playerItem = gameState.playerItems[playerItemIndex]
   if (playerItem) {
-    gameState.playerCurrentRoom.items.push(playerItem)
+    gameState.getPlayerCurrentRoom().items.push(playerItem)
     gameState.playerItems.splice(playerItemIndex, 1)
     console.log(`\nYou dropped a ${playerItem.name}\n`)
   } else {
@@ -128,14 +128,14 @@ function drop(args) {
 }
 
 function observe() {
-  if (gameState.playerCurrentRoom.items) {
-    console.log(`Room Items: ${gameState.playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
+  if (gameState.getPlayerCurrentRoom().items) {
+    console.log(`Room Items: ${gameState.getPlayerCurrentRoom().items.map(item => `\n\t${item.name}`)}`)
   }
-  if (gameState.playerCurrentRoom.connectedRooms) {
-    console.log(`Connected rooms: ${gameState.playerCurrentRoom.connectedRooms.join(', ')}`)
+  if (gameState.getPlayerCurrentRoom().connectedRooms) {
+    console.log(`Connected rooms: ${gameState.getPlayerCurrentRoom().connectedRooms.join(', ')}`)
   }
-  if (gameState.playerCurrentRoom.description) {
-    console.log(`\n\x1b[34m%s\x1b[0m`, gameState.playerCurrentRoom.description, `\n`)
+  if (gameState.getPlayerCurrentRoom().description) {
+    console.log(`\n\x1b[34m%s\x1b[0m`, gameState.getPlayerCurrentRoom().description, `\n`)
   }
 }
 
@@ -180,7 +180,7 @@ function attack(args) {
   }
 
   if (monster.health > 0) {
-    const monsterDamage = gameState.playerCurrentRoom.monster.damage
+    const monsterDamage = gameState.getPlayerCurrentRoom().monster.damage
 
     if (gameState.godmode == false) {
       //regular monster attack
@@ -193,16 +193,16 @@ function attack(args) {
       )
     }
   } else {
-    console.log(`You killed the ${gameState.playerCurrentRoom.monster.name}! Nice job!\n`)
-    if (gameState.playerCurrentRoom.monster.drops) {
+    console.log(`You killed the ${gameState.getPlayerCurrentRoom().monster.name}! Nice job!\n`)
+    if (gameState.getPlayerCurrentRoom().monster.drops) {
       //monster loot drops
-      gameState.playerCurrentRoom.items.push(gameState.playerCurrentRoom.monster.drops)
+      gameState.getPlayerCurrentRoom().items.push(gameState.getPlayerCurrentRoom().monster.drops)
       console.log(
         `\x1b[32m%s\x1b[0m`,
-        `The monster dropped ${gameState.playerCurrentRoom.monster.drops.name}!\n`,
+        `The monster dropped ${gameState.getPlayerCurrentRoom().monster.drops.name}!\n`,
       )
     }
-    delete gameState.playerCurrentRoom.monster
+    delete gameState.getPlayerCurrentRoom().monster
   }
 }
 
@@ -230,16 +230,16 @@ function examine(args) {
   if (itemIndex === -1) {
     //searches current room's monsters to see if there's a monster by that name
     const monster =
-      gameState.playerCurrentRoom.monster.name.toLowerCase() === targetName.toLowerCase()
+      gameState.getPlayerCurrentRoom().monster.name.toLowerCase() === targetName.toLowerCase()
     if (!monster) {
       console.log(`There's no item or monster by that name.`)
       return
     } else {
       //monster exists by that name
-      for (var property in gameState.playerCurrentRoom.monster) {
-        if (gameState.playerCurrentRoom.monster.hasOwnProperty(property)) {
+      for (var property in gameState.getPlayerCurrentRoom().monster) {
+        if (gameState.getPlayerCurrentRoom().monster.hasOwnProperty(property)) {
           if (property != 'drops') {
-            console.log(property + ': ' + gameState.playerCurrentRoom.monster[property])
+            console.log(property + ': ' + gameState.getPlayerCurrentRoom().monster[property])
           }
         }
       }
@@ -265,19 +265,19 @@ function examine(args) {
 ////////////////////////////////////
 
 function printUI() {
-  if (gameState.playerCurrentRoom) {
-    console.log(`Room: ${gameState.playerCurrentRoom.name}`)
+  if (gameState.getPlayerCurrentRoom()) {
+    console.log(`Room: ${gameState.getPlayerCurrentRoom().name}`)
   }
 
   if (gameState.playerItems.length > 0) {
     console.log(`Inventory: ${gameState.playerItems.map(item => `\n\t${item.name}`)}`)
   }
 
-  if (gameState.playerCurrentRoom && gameState.playerCurrentRoom.monster) {
+  if (gameState.getPlayerCurrentRoom() && gameState.getPlayerCurrentRoom().monster) {
     console.log(
       `\x1b[33m%s\x1b[0m`,
-      `\nMonster: ${gameState.playerCurrentRoom.monster.name} (${
-        gameState.playerCurrentRoom.monster.health
+      `\nMonster: ${gameState.getPlayerCurrentRoom().monster.name} (${
+        gameState.getPlayerCurrentRoom().monster.health
       }HP)`,
     )
   }

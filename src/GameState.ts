@@ -5,7 +5,7 @@ const GAMESTATE_FILENAME = 'gamestate.json'
 
 export default class GameState {
   rooms: any
-  playerCurrentRoom: any
+  playerCurrentRoomKey: string
   playerItems: any[]
   playerHealth: number
   godmode: boolean
@@ -16,10 +16,18 @@ export default class GameState {
     }
 
     this.initRooms()
-    this.playerCurrentRoom = this.rooms['Bob']
+    this.playerCurrentRoomKey = 'Bob'
     this.playerItems = []
     this.playerHealth = 100
     this.godmode = false
+  }
+
+  getPlayerCurrentRoom() {
+    return this.rooms[this.playerCurrentRoomKey]
+  }
+
+  setPlayerCurrentRoom(key: string) {
+    this.playerCurrentRoomKey = key
   }
 
   load(): boolean {

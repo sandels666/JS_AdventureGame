@@ -6,12 +6,12 @@
         "name": "Bronze Sword",
         "damage": 25,
         "weight": 3000,
-        "type": 0
+        "type": "Weapon"
       },
       {
         "name": "Water Bottle",
         "weight": 300,
-        "type": 3,
+        "type": "Consumable",
         "heals": 10
       }
     ],
@@ -27,7 +27,7 @@
         "name": "Shield",
         "armor": 34,
         "weight": 4000,
-        "type": 1
+        "type": "Armor"
       }
     ],
     "monster": {
@@ -38,7 +38,7 @@
         "name": "Steel sword",
         "damage": 35,
         "weight": 2000,
-        "type": 0
+        "type": "Weapon"
       }
     },
     "connectedRooms": [
@@ -53,7 +53,7 @@
       {
         "name": "Health potion",
         "weight": 500,
-        "type": 3,
+        "type": "Consumable",
         "heals": 50
       }
     ],
@@ -64,7 +64,7 @@
       "drops": {
         "name": "Liquid Anthrax",
         "weight": 500,
-        "type": 3,
+        "type": "Consumable",
         "heals": -500
       }
     },
