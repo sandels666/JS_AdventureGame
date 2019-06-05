@@ -1,5 +1,4 @@
-import { TYPE_WEAPON, TYPE_CONSUMABLE, TYPE_SHIELD } from "./index"
-import { existsSync, readFileSync, writeFileSync } from "fs"
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { loadFile } from './ContentLoader'
 
 const GAMESTATE_FILENAME = 'gamestate.json'
@@ -17,7 +16,7 @@ export default class GameState {
     }
 
     this.initRooms()
-    this.playerCurrentRoom = this.rooms["Bob"]
+    this.playerCurrentRoom = this.rooms['Bob']
     this.playerItems = []
     this.playerHealth = 100
     this.godmode = false
@@ -27,7 +26,7 @@ export default class GameState {
     if (!existsSync(GAMESTATE_FILENAME)) {
       return false
     }
-    
+
     const gameStateJson = readFileSync(GAMESTATE_FILENAME, 'utf8')
     if (!gameStateJson) {
       return false
@@ -38,7 +37,7 @@ export default class GameState {
       return false
     }
 
-    for(const prop in gameState) {
+    for (const prop in gameState) {
       this[prop] = gameState[prop]
     }
 
