@@ -444,6 +444,8 @@ rl.on('line', (line) => {
   const command = mapCommand(words[0])
   const args = words.slice(1)
 
+  process.stdout.write("\u001b[2J\u001b[0;0H") // Clear screen
+
   const action = actions[command.toLowerCase()]
   if (action) {
     action(args)
