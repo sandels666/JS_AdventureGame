@@ -58,56 +58,11 @@ const gameState = new GameState()
 // Game Functionality
 ////////////////////////////////////
 
-const actions = {
-  save: args => {
-    save(args)
-  },
-
-  move: args => {
-    move(args)
-  },
-
-  pickup: args => {
-    pickup(args)
-  },
-
-  drop: args => {
-    drop(args)
-  },
-
-  eat: args => {
-    eat(args)
-  },
-
-  observe: _ => {
-    observe()
-  },
-
-  help: _ => {
-    help()
-  },
-
-  attack: args => {
-    attack(args)
-  },
-
-  tgm: _ => {
-    tgm()
-  },
-
-  examine: args => {
-    examine(args)
-  },
-
-}
-
-
 function save(args) {
   if (gameState.save()) {
     console.log('Game saved!')
   }
 }
-
 
 function move(args){
   const targetRoom = args[0]
@@ -117,7 +72,6 @@ function move(args){
     console.log('I can not get there from here.')
   }
 }
-
 
 function pickup(args){
   const targetItem = args.join(" ")
@@ -152,7 +106,6 @@ function pickup(args){
   }
 }
 
-
 function eat(args){
   const targetItemName = args.join(" ")
   const itemIndex = gameState.playerItems.findIndex(item => item.name.toLowerCase() === targetItemName.toLowerCase())
@@ -179,7 +132,6 @@ function eat(args){
   gameState.playerItems.splice(itemIndex, 1)
 }
 
-
 function drop(args){
   const targetItem = args.join(" ")
   const playerItemIndex = gameState.playerItems.findIndex(item => item.name.toLowerCase() === targetItem.toLowerCase())
@@ -193,7 +145,6 @@ function drop(args){
   }
 }
 
-
 function observe(){
   if (gameState.playerCurrentRoom.items){
     console.log(`Room Items: ${gameState.playerCurrentRoom.items.map(item => `\n\t${item.name}`)}`)
@@ -206,7 +157,6 @@ function observe(){
   }
 }
 
-
 function help(){
   console.log("\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!")
   console.log("\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.")
@@ -214,7 +164,6 @@ function help(){
   console.log("\tYou can view this note again by typing 'help' at any time!")
   console.log("\n\tEnjoy the game!\n")
 }
-
 
 function attack(args){
   const weapon = gameState.playerItems.find(item => item.type === TYPE_WEAPON)
@@ -265,7 +214,6 @@ function attack(args){
   }
 }
 
-
 function tgm (){
   if (gameState.godmode == false){
     console.log('\x1b[31m%s\x1b[0m','\nGod mode enabled! \nYou have gained mysterious superpowers...\n')
@@ -277,7 +225,6 @@ function tgm (){
   }
 
 }
-
 
 function examine (args) {
   const targetName = args.join(" ")
@@ -318,12 +265,8 @@ function examine (args) {
       }
     }
   }
-
   console.log('')
-
 }
-
-
 
 ////////////////////////////////////
 // Game UI
@@ -351,7 +294,6 @@ function printUI() {
 
 }
 
-
 function playerDeath() {
   console.log('\x1b[31m%s\x1b[0m',`\nYour health is ${gameState.playerHealth}HP.`)
   console.log('\x1b[31m%s\x1b[0m',`\nOh dear, you're dead!`)
@@ -359,38 +301,45 @@ function playerDeath() {
   //console.log(`\nDo you want to play again? (Y/N)`)
   console.log('\x1b[31m%s\x1b[0m',`The game will exit in 15 seconds.`)
   setTimeout(process.exit, 15000)
-  
 }
-
 
 
 ////////////////////////////////////
 // Game Input
 ////////////////////////////////////
 
-function mapCommand(command) {
+function perform(command, args) {
+  if ([
+    'save',
+  ].indexOf(command) != -1) {
+    return save(args)
+  }
+
   if ([
     'take',
     'pick',
     'collect',
     'grab',
+    'pickup',
   ].indexOf(command) != -1) {
-    return 'pickup'
+    return pickup(args)
   }
 
   if ([
     'look',
     'search',
+    'observe',
   ].indexOf(command) != -1) {
-    return 'observe'
+    return observe()
   }
 
   if ([
     'go',
     'goto',
     'walk',
+    'move',
   ].indexOf(command) != -1) {
-    return 'move'
+    return move(args)
   }
 
   if ([
@@ -398,37 +347,52 @@ function mapCommand(command) {
     'cheats',
     'cheat',
     'godmode',
+    'tgm',
   ].indexOf(command) != -1) {
-    return 'tgm'
+    return tgm()
   }
 
   if ([
     'discard',
     'abandon',
     'dismiss',
+    'drop',
   ].indexOf(command) != -1) {
-    return 'drop'
+    return drop(args)
   }
 
   if ([
     'drink',
     'consume',
     'gulp',
+    'eat',
   ].indexOf(command) != -1) {
-    return 'eat'
+    return eat(args)
+  }
+
+  if ([
+    'attack',
+  ].indexOf(command) != -1) {
+    return attack(args)
+  }
+
+  if ([
+    'examine',
+  ].indexOf(command) != -1) {
+    return examine(args)
   }
 
   if ([
     'halp',
     'helpme',
     'stuck',
+    'help',
   ].indexOf(command) != -1) {
-    return 'help'
+    return help()
   }
-  
-  return command
-}
 
+  return undefined
+}
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -436,20 +400,15 @@ const rl = readline.createInterface({
   prompt: "\n--> ",
 })
 
-
 rl.prompt()
 rl.on('line', (line) => {
   line = line.trim()
   const words = line.split(" ")
-  const command = mapCommand(words[0])
   const args = words.slice(1)
-
+  
   process.stdout.write("\u001b[2J\u001b[0;0H") // Clear screen
-
-  const action = actions[command.toLowerCase()]
-  if (action) {
-    action(args)
-  }
+  
+  perform(words[0], args)
 
   printUI()
 
