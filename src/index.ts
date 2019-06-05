@@ -315,43 +315,43 @@ function playerDeath() {
 ////////////////////////////////////
 
 function perform(command, args) {
-  if (['save'].indexOf(command) != -1) {
+  if (['save'].includes(command)) {
     return save(args)
   }
 
-  if (['take', 'pick', 'collect', 'grab', 'pickup'].indexOf(command) != -1) {
+  if (['take', 'pick', 'collect', 'grab', 'pickup'].includes(command)) {
     return pickup(args)
   }
 
-  if (['look', 'search', 'observe'].indexOf(command) != -1) {
+  if (['look', 'search', 'observe'].includes(command)) {
     return observe()
   }
 
-  if (['go', 'goto', 'walk', 'move'].indexOf(command) != -1) {
+  if (['go', 'goto', 'walk', 'move'].includes(command)) {
     return move(args)
   }
 
-  if (['enablecheats', 'cheats', 'cheat', 'godmode', 'tgm'].indexOf(command) != -1) {
+  if (['enablecheats', 'cheats', 'cheat', 'godmode', 'tgm'].includes(command)) {
     return tgm()
   }
 
-  if (['discard', 'abandon', 'dismiss', 'drop'].indexOf(command) != -1) {
+  if (['discard', 'abandon', 'dismiss', 'drop'].includes(command)) {
     return drop(args)
   }
 
-  if (['drink', 'consume', 'gulp', 'eat'].indexOf(command) != -1) {
+  if (['drink', 'consume', 'gulp', 'eat'].includes(command)) {
     return eat(args)
   }
 
-  if (['attack'].indexOf(command) != -1) {
+  if (['attack'].includes(command)) {
     return attack(args)
   }
 
-  if (['examine'].indexOf(command) != -1) {
+  if (['examine'].includes(command)) {
     return examine(args)
   }
 
-  if (['halp', 'helpme', 'stuck', 'help'].indexOf(command) != -1) {
+  if (['halp', 'helpme', 'stuck', 'help'].includes(command)) {
     return help()
   }
 
