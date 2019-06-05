@@ -20,6 +20,18 @@ import * as UserInterface from './UserInterface'
 //
 //////////////////////////////////////////////
 
+/*
+
+Architecture
+
+  Single State Object
+    Class in order to manage getting and setting
+
+  GameLoop
+    Clear Screen -> Perform Action on State -> Show Result
+
+*/
+
 ////////////////////////////////////
 // Item Types
 ////////////////////////////////////
