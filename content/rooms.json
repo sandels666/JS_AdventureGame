@@ -1,0 +1,76 @@
+{
+  "Bob": {
+    "name": "Bob's Bedroom",
+    "items": [
+      {
+        "name": "Bronze Sword",
+        "damage": 25,
+        "weight": 3000,
+        "type": 0
+      },
+      {
+        "name": "Water Bottle",
+        "weight": 300,
+        "type": 3,
+        "heals": 10
+      }
+    ],
+    "connectedRooms": [
+      "Anna"
+    ],
+    "description": "As you look around the room, you notice that it quite resembles the bedroom \n    you had when you were a child. I wonder if that's a coincidence..?"
+  },
+  "Anna": {
+    "name": "Anna's Bedroom",
+    "items": [
+      {
+        "name": "Shield",
+        "armor": 34,
+        "weight": 4000,
+        "type": 1
+      }
+    ],
+    "monster": {
+      "name": "Angry Bill",
+      "health": 100,
+      "damage": 10,
+      "drops": {
+        "name": "Steel sword",
+        "damage": 35,
+        "weight": 2000,
+        "type": 0
+      }
+    },
+    "connectedRooms": [
+      "Bob",
+      "Attic"
+    ],
+    "description": "Why are you looking around a little girl's bedroom? Are you a pedophile? o.O"
+  },
+  "Attic": {
+    "name": "Attic",
+    "items": [
+      {
+        "name": "Health potion",
+        "weight": 500,
+        "type": 3,
+        "heals": 50
+      }
+    ],
+    "monster": {
+      "name": "Grue",
+      "health": 10000,
+      "damage": 10000,
+      "drops": {
+        "name": "Liquid Anthrax",
+        "weight": 500,
+        "type": 3,
+        "heals": -500
+      }
+    },
+    "connectedRooms": [
+      "Anna"
+    ],
+    "description": "It's creepy as fuck in here. You can vaguely spot a grue lurking in the shadows.\n    You probably shouldn't try attacking it..."
+  }
+}
