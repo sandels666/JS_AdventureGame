@@ -22,10 +22,12 @@ import GameState from './GameState'
 // Item Types
 ////////////////////////////////////
 
-export const TYPE_WEAPON = 0
-export const TYPE_SHIELD = 1
-export const TYPE_ARMOR = 2
-export const TYPE_CONSUMABLE = 3
+export enum ItemType {
+  Weapon = 'Weapon',
+  Shield = 'Shield',
+  Armor = 'Armor',
+  Consumable = 'Consumable',
+}
 
 ////////////////////////////////////
 // Game State
@@ -52,29 +54,29 @@ function move(args) {
 
 function pickup(args) {
   const targetItem = args.join(' ')
-  const roomItemIndex = gameState.playerCurrentRoom.items.findIndex(
+  const roomItemIndex = gameState.getPlayerCurrentRoom().items.findIndex(
     item => item.name.toLowerCase() === targetItem.toLowerCase(),
   )
-  const roomItem = gameState.playerCurrentRoom.items[roomItemIndex]
+  const roomItem = gameState.getPlayerCurrentRoom().items[roomItemIndex]
 
   if (roomItem) {
-    const playerWeaponIndex = gameState.playerItems.findIndex(item => item.type === TYPE_WEAPON)
+    const playerWeaponIndex = gameState.playerItems.findIndex(item => item.type === ItemType.Weapon)
     const playerWeapon = gameState.playerItems[playerWeaponIndex]
-    const roomItemIsWeapon = roomItem.type === TYPE_WEAPON
+    const roomItemIsWeapon = roomItem.type === ItemType.Weapon
 
     //if player already has a weapon and the room item is a weapon
     if (playerWeaponIndex !== -1 && roomItemIsWeapon) {
       //-> drop previous weapon and pick up new one
       console.log(`\nYou dropped a ${playerWeapon.name}`)
-      gameState.playerCurrentRoom.items.push(playerWeapon)
+      gameState.getPlayerCurrentRoom().items.push(playerWeapon)
       gameState.playerItems.splice(playerWeaponIndex, 1)
       gameState.playerItems.push(roomItem)
-      gameState.playerCurrentRoom.items.splice(roomItemIndex, 1)
+      gameState.getPlayerCurrentRoom().items.splice(roomItemIndex, 1)
 
       console.log(`\nYou picked up a ${roomItem.name}\n`)
     } else {
       gameState.playerItems.push(roomItem)
-      gameState.playerCurrentRoom.items.splice(roomItemIndex, 1)
+      gameState.getPlayerCurrentRoom().items.splice(roomItemIndex, 1)
       console.log(`\nYou picked up a ${roomItem.name}\n`)
     }
   } else {
@@ -96,7 +98,7 @@ function eat(args) {
   // Item does exist
   const item = gameState.playerItems[itemIndex]
 
-  if (item.type !== TYPE_CONSUMABLE) {
+  if (item.type !== ItemType.Consumable) {
     console.log('That item is not consumable.')
     return
   }
@@ -150,13 +152,13 @@ function help() {
 }
 
 function attack(args) {
-  const weapon = gameState.playerItems.find(item => item.type === TYPE_WEAPON)
+  const weapon = gameState.playerItems.find(item => item.type === ItemType.Weapon)
   if (!weapon) {
     console.log('You do not have a weapon!')
     return
   }
 
-  const monster = gameState.playerCurrentRoom.monster
+  const monster = gameState.getPlayerCurrentRoom().monster
   if (!monster) {
     console.log('There is nothing to attack in this room!')
     return
