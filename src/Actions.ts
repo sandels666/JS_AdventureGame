@@ -1,5 +1,5 @@
 import GameState from './GameState'
-import { ItemType } from './index'
+import { ItemType } from './Item'
 
 function save(gameState: GameState, args: string[]) {
   if (gameState.save()) {

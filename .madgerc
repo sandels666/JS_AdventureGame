@@ -1,0 +1,9 @@
+{
+	"fontSize": "12px",
+  "layout": "circo",
+  "backgroundColor": "#FFFFFF",
+  "nodeColor": "#2c3e50",
+  "noDependencyColor": "#27ae60",
+  "cyclicNodeColor": "#c0392b",
+  "edgeColor": "#34495e"
+}

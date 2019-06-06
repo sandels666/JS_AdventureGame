@@ -32,17 +32,6 @@ Architecture
 
 */
 
-////////////////////////////////////
-// Item Types
-////////////////////////////////////
-
-export enum ItemType {
-  Weapon = 'Weapon',
-  Shield = 'Shield',
-  Armor = 'Armor',
-  Consumable = 'Consumable',
-}
-
 // State
 const gameState = new GameState()
 

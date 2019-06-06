@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "develop": "npm run build && npm run start",
-    "document": "rm -rf doc/dependencies.svg && mkdir doc && madge src/index.ts -i doc/dependencies.svg"
+    "document": "rm -rf doc/dependencies.svg && mkdir -p doc && madge src/index.ts -i doc/dependencies.svg"
   },
   "dependencies": {
     "color": "^3.1.2"
