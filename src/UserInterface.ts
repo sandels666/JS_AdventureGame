@@ -9,11 +9,11 @@ export function turn(gameState: GameState) {
     console.log(`Inventory: ${gameState.playerItems.map(item => `\n\t${item.name}`)}`)
   }
 
-  if (gameState.getPlayerCurrentRoom() && gameState.getPlayerCurrentRoom().monster) {
+  if (gameState.getPlayerCurrentRoom() && gameState.getPlayerCurrentRoom().enemy) {
     console.log(
       `\x1b[33m%s\x1b[0m`,
-      `\nMonster: ${gameState.getPlayerCurrentRoom().monster.name} (${
-        gameState.getPlayerCurrentRoom().monster.health
+      `\nEnemy: ${gameState.getPlayerCurrentRoom().enemy.name} (${
+        gameState.getPlayerCurrentRoom().enemy.health
       }HP)`,
     )
   }
@@ -26,21 +26,31 @@ export function turn(gameState: GameState) {
 }
 
 export function gameStart() {
-  console.log("\nYou wake up. You're laying on the floor of a kid's bedroom.")
+  console.log("\nYou wake up. You're laying on the floor of an old dungeon cell.")
   console.log('You have no memory of any previous events.')
   console.log(
     '\nYou find a note on the ground with some instructions written on it. The note says:',
   )
-  console.log('\n\tWelcome to AdventureGame(TM) by Sandels Entertainment!')
+  console.log('\n\tWelcome to dungeonDungeon(TM) by Sandels Entertainment!')
   console.log(
-    "\tYou can look around by typing 'look'. You can pick up and drop items by typing 'pick' or 'drop' and the item's name.",
+    "\tYou can look around by typing '\x1b[33mlook\x1b[0m'. You can pick up and drop items by typing '\x1b[33mpick\x1b[0m' or '\x1b[33mdrop\x1b[0m' and the item's name.",
   )
   console.log(
-    "\tYou can move to different rooms by typing 'move' and the room's name. You can attack by typing 'attack'.",
+    "\tYou can move to different rooms by typing '\x1b[33mmove\x1b[0m' and the room's name. You can attack by typing '\x1b[33mattack\x1b[0m'.",
   )
-  console.log("\tYou can use consumable items by typing 'eat' or 'drink' and the item's name.")
-  console.log("\tYou can view this note again by typing 'help' at any time!")
+  console.log("\tYou can use consumable items by typing '\x1b[33meat\x1b[0m' or '\x1b[33mdrink\x1b[0m' and the item's name.")
+  console.log("\tYou can view this note again by typing '\x1b[33mhelp\x1b[0m' at any time!")
   console.log('\n\tEnjoy the game!\n')
+  
+/* "name": "Grue",
+"health": 10000,
+"damage": 10000,
+"drops": {
+  "name": "Liquid Anthrax",
+  "weight": 500,
+  "type": "Consumable",
+  "heals": -500
+  */
 }
 
 export function gameEnd(gameState: GameState) {

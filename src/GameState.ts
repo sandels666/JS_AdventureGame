@@ -16,7 +16,7 @@ export default class GameState {
     }
 
     this.initRooms()
-    this.playerCurrentRoomKey = 'Bob'
+    this.playerCurrentRoomKey = 'cell'
     this.playerItems = []
     this.playerHealth = 100
     this.godmode = false

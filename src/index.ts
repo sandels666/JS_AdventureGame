@@ -6,14 +6,13 @@ import * as UserInterface from './UserInterface'
 /////////////////TODO:////////////////////////
 //
 // -Technical:
-//   -Save states
 //   -Clear screen after each input (properly)
 // -Gameplay:
 //   -Armor/shield system (reduces incoming damage)
 //   -Armor/shield swapping
 // -Content:
 //   -More rooms
-//   -More monsters
+//   -More enemys
 //   -More items
 //   -More story/choices
 //   -Rules of the game explained to player (more in-depth 'help' function)

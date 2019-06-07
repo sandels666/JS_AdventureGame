@@ -1,28 +1,60 @@
 {
-  "Bob": {
-    "name": "Bob's Bedroom",
+  "cell": {
+    "name": "Dungeon cell",
     "items": [
       {
-        "name": "Bronze Sword",
-        "damage": 25,
+        "name": "Rusty Sword",
+        "damage": 10,
         "weight": 3000,
         "type": "Weapon"
-      },
+      }
+    ],
+    "connectedRooms": [
+      "jail"
+    ],
+    "description": "As you look around the room, you notice that it quite resembles the bedroom \nyou had when you were a child. I wonder if that's a coincidence..?"
+  },
+
+
+  "jail": {
+    "name": "jail",
+    "items": [
+      {
+        "name": "Leather Armor",
+        "armor": 25,
+        "weight": 2500,
+        "type": "Armor"
+      }
+
+    ],
+    "enemy": {
+      "name": "Skeleton",
+      "health": 30,
+      "damage": 5,
+      "drops": {
+        "name": "Health potion",
+        "weight": 500,
+        "type": "Consumable",
+        "heals": 40
+      }
+    },
+    "connectedRooms": [
+      "cell",
+      "guardpost"
+    ],
+    "description": "This jail seems mostly abandoned. You can see a rotting corpse in one of the cells..."
+  },
+
+
+  "guardpost": {
+    "name": "guardpost",
+    "items": [
       {
         "name": "Water Bottle",
         "weight": 300,
         "type": "Consumable",
         "heals": 10
-      }
-    ],
-    "connectedRooms": [
-      "Anna"
-    ],
-    "description": "As you look around the room, you notice that it quite resembles the bedroom \n    you had when you were a child. I wonder if that's a coincidence..?"
-  },
-  "Anna": {
-    "name": "Anna's Bedroom",
-    "items": [
+      },
       {
         "name": "Shield",
         "armor": 34,
@@ -30,47 +62,20 @@
         "type": "Armor"
       }
     ],
-    "monster": {
-      "name": "Angry Bill",
-      "health": 100,
-      "damage": 10,
+    "enemy": {
+      "name": "Guard",
+      "health": 50,
+      "damage": 8,
       "drops": {
         "name": "Steel sword",
-        "damage": 35,
+        "damage": 30,
         "weight": 2000,
         "type": "Weapon"
       }
     },
     "connectedRooms": [
-      "Bob",
-      "Attic"
+      "jail"
     ],
-    "description": "Why are you looking around a little girl's bedroom? Are you a pedophile? o.O"
-  },
-  "Attic": {
-    "name": "Attic",
-    "items": [
-      {
-        "name": "Health potion",
-        "weight": 500,
-        "type": "Consumable",
-        "heals": 50
-      }
-    ],
-    "monster": {
-      "name": "Grue",
-      "health": 10000,
-      "damage": 10000,
-      "drops": {
-        "name": "Liquid Anthrax",
-        "weight": 500,
-        "type": "Consumable",
-        "heals": -500
-      }
-    },
-    "connectedRooms": [
-      "Anna"
-    ],
-    "description": "It's creepy as fuck in here. You can vaguely spot a grue lurking in the shadows.\n    You probably shouldn't try attacking it..."
+    "description": "Looks like a guard post. You can see a guard sitting on a chair, deep asleep.\nThere's a shield on the table."
   }
 }

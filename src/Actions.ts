@@ -124,8 +124,8 @@ function attack(gameState: GameState, args: string[]) {
     return
   }
 
-  const monster = gameState.getPlayerCurrentRoom().monster
-  if (!monster) {
+  const enemy = gameState.getPlayerCurrentRoom().enemy
+  if (!enemy) {
     console.log('There is nothing to attack in this room!')
     return
   }
@@ -134,41 +134,41 @@ function attack(gameState: GameState, args: string[]) {
     //godmode-enabled attack properties
     const damage = 10000
 
-    monster.health = monster.health - damage
-    console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+    enemy.health = enemy.health - damage
+    console.log(`\nYou attack the enemy! You deal ${damage} damage.`)
   } else {
     //regular attacking without godmode
     const type = args[0]
     const damage = type === 'slash' ? weapon.damage * 1.5 : weapon.damage
 
-    monster.health = monster.health - damage
-    console.log(`\nYou attack the monster! You deal ${damage} damage.`)
+    enemy.health = enemy.health - damage
+    console.log(`\nYou attack the enemy! You deal ${damage} damage.`)
   }
 
-  if (monster.health > 0) {
-    const monsterDamage = gameState.getPlayerCurrentRoom().monster.damage
+  if (enemy.health > 0) {
+    const enemyDamage = gameState.getPlayerCurrentRoom().enemy.damage
 
     if (gameState.godmode == false) {
-      //regular monster attack
-      gameState.playerHealth = gameState.playerHealth - monsterDamage
-      console.log(`The monster attacks you back! You take ${monsterDamage} damage.\n`)
+      //regular enemy attack
+      gameState.playerHealth = gameState.playerHealth - enemyDamage
+      console.log(`The enemy attacks you back! You take ${enemyDamage} damage.\n`)
     } else {
-      //godmode monster attack
+      //godmode enemy attack
       console.log(
-        `The monster attacks you back, but fails to damage you due to your god-like status.\n`,
+        `The enemy attacks you back, but fails to damage you due to your god-like status.\n`,
       )
     }
   } else {
-    console.log(`You killed the ${gameState.getPlayerCurrentRoom().monster.name}! Nice job!\n`)
-    if (gameState.getPlayerCurrentRoom().monster.drops) {
-      //monster loot drops
-      gameState.getPlayerCurrentRoom().items.push(gameState.getPlayerCurrentRoom().monster.drops)
+    console.log(`You killed the ${gameState.getPlayerCurrentRoom().enemy.name}! Nice job!\n`)
+    if (gameState.getPlayerCurrentRoom().enemy.drops) {
+      //enemy loot drops
+      gameState.getPlayerCurrentRoom().items.push(gameState.getPlayerCurrentRoom().enemy.drops)
       console.log(
         `\x1b[32m%s\x1b[0m`,
-        `The monster dropped ${gameState.getPlayerCurrentRoom().monster.drops.name}!\n`,
+        `The enemy dropped ${gameState.getPlayerCurrentRoom().enemy.drops.name}!\n`,
       )
     }
-    delete gameState.getPlayerCurrentRoom().monster
+    delete gameState.getPlayerCurrentRoom().enemy
   }
 }
 
@@ -194,18 +194,18 @@ function examine(gameState: GameState, args: string[]) {
     item => item.name.toLowerCase() === targetName.toLowerCase(),
   )
   if (itemIndex === -1) {
-    //searches current room's monsters to see if there's a monster by that name
-    const monster =
-      gameState.getPlayerCurrentRoom().monster.name.toLowerCase() === targetName.toLowerCase()
-    if (!monster) {
-      console.log(`There's no item or monster by that name.`)
+    //searches current room's enemys to see if there's a enemy by that name
+    const enemy =
+      gameState.getPlayerCurrentRoom().enemy.name.toLowerCase() === targetName.toLowerCase()
+    if (!enemy) {
+      console.log(`There's no item or enemy by that name.`)
       return
     } else {
-      //monster exists by that name
-      for (var property in gameState.getPlayerCurrentRoom().monster) {
-        if (gameState.getPlayerCurrentRoom().monster.hasOwnProperty(property)) {
+      //enemy exists by that name
+      for (var property in gameState.getPlayerCurrentRoom().enemy) {
+        if (gameState.getPlayerCurrentRoom().enemy.hasOwnProperty(property)) {
           if (property != 'drops') {
-            console.log(property + ': ' + gameState.getPlayerCurrentRoom().monster[property])
+            console.log(property + ': ' + gameState.getPlayerCurrentRoom().enemy[property])
           }
         }
       }
